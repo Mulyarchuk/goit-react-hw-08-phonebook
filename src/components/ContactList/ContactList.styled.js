@@ -6,4 +6,5 @@ flex-direction: column;
 align-items: center;
 width: auto;
 gap: 15px;
+text-align: left;
 `

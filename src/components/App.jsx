@@ -7,6 +7,7 @@ import authSelectors from "redux/auth/auth-selectors";
 import operations from 'redux/auth/auth-operations';
 import AppBar from './AppBar/AppBar';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { Loader } from './Loader/Loader';
 
 
 const Contact = lazy(() => import ("../Pages/ContactsPage/ContactPage"))
@@ -28,13 +29,13 @@ export default function App(){
            <div>
       <AppBar/>
       
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<Loader/>}>
         <Routes>
         <Route
             path="home"
             element={
               <PublicRoute restricted>
-                <HomePage/>
+                <HomePage />
               </PublicRoute>
             }
           />

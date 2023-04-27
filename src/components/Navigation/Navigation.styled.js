@@ -3,7 +3,7 @@ import {NavLink } from "react-router-dom";
 
 export const Link = styled(NavLink)`
 text-decoration: none;
-color:#0043ff;
+color:#000;
 font-size: 20px;
 padding-left: 5px;
 :hover,
