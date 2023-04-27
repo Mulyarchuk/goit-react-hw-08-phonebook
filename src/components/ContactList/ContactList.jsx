@@ -1,9 +1,11 @@
 
-import { ContactListItem } from "components/ContactListItem/ContactListItem";
+import { ContactListItem } from "../ContactListItem/ContactListItem";
 import { useSelector } from "react-redux";
 import { getStatusFilter } from "redux/filterSlice";
 import { getPhones } from "redux/phoneSlice";
-import css from './ContactList.module.css';
+import { List } from "./ContactList.styled";
+
+
 
 export const ContactList = () => {
     const contacts = useSelector(getPhones);
@@ -12,16 +14,16 @@ export const ContactList = () => {
     const filteredContacts = contacts.filter(contact =>
       contact.name.toLowerCase().includes(filter)
     );
-
+   
+    
     return(
-        <ul className={css.contactList__list}>
+        <List>
             {filteredContacts.map(contact => {
-                const {name, phone, id} = contact || {}
-                return <ContactListItem key = {id} name={name} phone={phone} id={id}/>
+                const {name, number, id} = contact || {}
+                return <ContactListItem key = {id} name={name} phone={number} id={id}/>
             })}
-        </ul>
+        </List>
     )
 }
-
 
 

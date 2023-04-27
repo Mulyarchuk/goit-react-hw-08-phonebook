@@ -1,39 +1,72 @@
-import { useSelector } from 'react-redux'
-import  ContactForm  from "./ContactForm/ContactForm";
-import { ContactList } from "./ContactList/ContactList";
-import { Filter } from "./Filter/Filter";
-import { getPhones } from "redux/phoneSlice";
-import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { fetchContacts } from "redux/operations";
-import { Loader } from './Loader/Loader';
+import { useSelector } from 'react-redux';
+import { useDispatch} from "react-redux";
+import { useEffect, Suspense, lazy } from "react";
+import PrivateRoute from "./PrivateRoute/PrivatRoute";
+import PublicRoute from "./PublicRoute/PublicRoute";
+import authSelectors from "redux/auth/auth-selectors";
+import operations from 'redux/auth/auth-operations';
+import AppBar from './AppBar/AppBar';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
-export default function App () {
-  const contacts = useSelector(getPhones);
+
+const Contact = lazy(() => import ("../Pages/ContactsPage/ContactPage"))
+const LoginPage = lazy(() => import ("../Pages/LoginPage/LoginPage"))
+const RegisterPage = lazy(() => import ("../Pages/RegisterPage/RegisterPage"))
+const HomePage = lazy(()=> import("../Pages/HomePage/HomePage") )
+
+
+export default function App(){
   const dispatch = useDispatch();
+  const isRefreshing = useSelector(authSelectors.getIsRefreshing)
   useEffect(() => {
-    dispatch(fetchContacts());
+    dispatch(operations.fetchCurrentUser());
   }, [dispatch]);
-  
 
-  return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: `column`,
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontSize: 24,
-        color: '#010101'
-      }}
-    >
-      <h1>Phonebook</h1>
-      <ContactForm />
-      {contacts.length>0 ? <h2>Contacts</h2> : <h2>There are no contacts</h2>}
-        {contacts.length>0 &&  <Filter />}
-        {contacts.isLoading && <Loader/>}
-        <ContactList />
+
+  return(
+    !isRefreshing && (
+           <div>
+      <AppBar/>
+      
+      <Suspense fallback={<div>Loading...</div>}>
+        <Routes>
+        <Route
+            path="home"
+            element={
+              <PublicRoute restricted>
+                <HomePage/>
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="contacts"
+            element={
+              <PrivateRoute>
+                <Contact />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="register"
+            element={
+              <PublicRoute redirectTo="/contacts" restricted>
+                <RegisterPage />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="login"
+            element={
+              <PublicRoute redirectTo="/contacts" restricted>
+                <LoginPage />
+              </PublicRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="home" />} />
+        </Routes>
+      </Suspense>
     </div>
-  );
-    };
+    )
+   )
+}
 
